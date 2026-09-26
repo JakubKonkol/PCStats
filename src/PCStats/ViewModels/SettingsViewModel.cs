@@ -84,14 +84,16 @@ public sealed partial class SettingsViewModel : ObservableObject, IDisposable
     private readonly SettingsStore _store;
     private readonly IHardwareMonitor _monitor;
     private readonly Dispatcher _dispatcher;
+    private readonly IShell _shell;
     private readonly List<MetricOptionViewModel> _options;
     private bool _syncing;
 
-    public SettingsViewModel(SettingsStore store, IHardwareMonitor monitor, Dispatcher dispatcher)
+    public SettingsViewModel(SettingsStore store, IHardwareMonitor monitor, Dispatcher dispatcher, IShell shell)
     {
         _store = store;
         _monitor = monitor;
         _dispatcher = dispatcher;
+        _shell = shell;
         _syncing = true; // nothing constructed below may push back into the store
 
         var selectedIds = store.Current.Metrics.Select(m => m.Id).ToHashSet();
@@ -305,7 +307,7 @@ public sealed partial class SettingsViewModel : ObservableObject, IDisposable
         if (_syncing)
             return;
         var ok = StartupService.SetEnabled(value);
-        StartupError = ok ? null : "Nie udało się zmienić zadania autostartu (sprawdź log.txt).";
+        StartupError = ok ? null : "Could not change the startup task (see log.txt).";
         if (!ok)
         {
             _syncing = true;
@@ -350,8 +352,25 @@ public sealed partial class SettingsViewModel : ObservableObject, IDisposable
     public string HardwareSummary { get; private set; } = string.Empty;
 
     public string DriverStatus => _monitor.IsCpuDriverAvailable
-        ? "Sterownik PawnIO: zainstalowany"
-        : "Sterownik PawnIO: BRAK – czujniki CPU niedostępne (pobierz z pawnio.eu)";
+        ? "PawnIO driver: installed"
+        : "PawnIO driver: MISSING – CPU sensors unavailable";
+
+    public bool IsDriverMissing => !_monitor.IsCpuDriverAvailable;
+
+    [ObservableProperty] public partial string? DriverInstallError { get; set; }
+
+    [RelayCommand]
+    private async Task InstallDriver()
+    {
+        DriverInstallError = null;
+
+        // The sensor library only detects the driver at process start, so a restart is needed either way;
+        // skip the installer if it already went in by other means since this copy started.
+        if (PawnIoInstaller.IsInstalled || await PawnIoInstaller.InstallAsync())
+            _shell.Restart();
+        else
+            DriverInstallError = "PawnIO installation failed (details in log.txt).";
+    }
 
     private void LoadFromSettings(AppSettings s)
     {
@@ -373,7 +392,7 @@ public sealed partial class SettingsViewModel : ObservableObject, IDisposable
             TemperatureCritical = s.TemperatureCritical;
 
             var hardware = _monitor.Metrics.Select(m => m.HardwareName).Distinct().Count();
-            HardwareSummary = $"Wykryto {_monitor.Metrics.Count} czujników na {hardware} urządzeniach";
+            HardwareSummary = $"Found {_monitor.Metrics.Count} sensors on {hardware} devices";
             StartWithWindows = StartupService.IsEnabled();
         }
         finally

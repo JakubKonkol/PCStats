@@ -108,14 +108,14 @@
 
     <Window.ContextMenu>
         <ContextMenu>
-            <MenuItem Header="Ustawienia…" Command="{Binding OpenSettingsCommand}" />
-            <MenuItem Header="Przełącz układ (kafelki / lista)" Command="{Binding ToggleLayoutCommand}" />
+            <MenuItem Header="Settings…" Command="{Binding OpenSettingsCommand}" />
+            <MenuItem Header="Toggle layout (tiles / list)" Command="{Binding ToggleLayoutCommand}" />
             <Separator />
-            <MenuItem Header="Zawsze na wierzchu" IsChecked="{Binding AlwaysOnTop, Mode=OneWay}" Command="{Binding ToggleAlwaysOnTopCommand}" />
-            <MenuItem Header="Przenikanie kliknięć" IsChecked="{Binding ClickThrough, Mode=OneWay}" Command="{Binding ToggleClickThroughCommand}" />
+            <MenuItem Header="Always on top" IsChecked="{Binding AlwaysOnTop, Mode=OneWay}" Command="{Binding ToggleAlwaysOnTopCommand}" />
+            <MenuItem Header="Click-through" IsChecked="{Binding ClickThrough, Mode=OneWay}" Command="{Binding ToggleClickThroughCommand}" />
             <Separator />
-            <MenuItem Header="Ukryj do zasobnika" Command="{Binding HideToTrayCommand}" />
-            <MenuItem Header="Zakończ" Command="{Binding ExitCommand}" />
+            <MenuItem Header="Hide to tray" Command="{Binding HideToTrayCommand}" />
+            <MenuItem Header="Exit" Command="{Binding ExitCommand}" />
         </ContextMenu>
     </Window.ContextMenu>
 
@@ -138,9 +138,9 @@
                             </Style.Triggers>
                         </Style>
                     </StackPanel.Style>
-                    <Button Style="{StaticResource IconButton}" Content="&#xE713;" ToolTip="Ustawienia" Command="{Binding OpenSettingsCommand}" />
-                    <Button Style="{StaticResource IconButton}" Content="&#xE921;" ToolTip="Ukryj do zasobnika" Command="{Binding HideToTrayCommand}" />
-                    <Button Style="{StaticResource DangerIconButton}" Content="&#xE8BB;" ToolTip="Zakończ" Command="{Binding ExitCommand}" />
+                    <Button Style="{StaticResource IconButton}" Content="&#xE713;" ToolTip="Settings" Command="{Binding OpenSettingsCommand}" />
+                    <Button Style="{StaticResource IconButton}" Content="&#xE921;" ToolTip="Hide to tray" Command="{Binding HideToTrayCommand}" />
+                    <Button Style="{StaticResource DangerIconButton}" Content="&#xE8BB;" ToolTip="Exit" Command="{Binding ExitCommand}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <Ellipse Width="7" Height="7" Fill="{DynamicResource AccentBrush}" Margin="0,1,8,0" />

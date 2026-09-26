@@ -84,7 +84,7 @@ public sealed partial class MetricTileViewModel : ObservableObject
         var max = _fixedMaximum ?? total;
         HasBar = settings.ShowBars && max is > 0;
         BarRatio = max is > 0 ? Math.Clamp(v / max.Value, 0, 1) : 0;
-        SecondaryText = total is > 0 ? "z " + MetricFormatter.FormatCompact(Descriptor.Kind, total.Value) : string.Empty;
+        SecondaryText = total is > 0 ? "of " + MetricFormatter.FormatCompact(Descriptor.Kind, total.Value) : string.Empty;
         Severity = Evaluate(v, total, settings);
 
         Push(v);

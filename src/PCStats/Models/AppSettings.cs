@@ -23,6 +23,9 @@ public sealed class AppSettings
     public int TemperatureWarning { get; set; } = 80;
     public int TemperatureCritical { get; set; } = 90;
 
+    /// <summary>Set when the user declined the startup offer to install PawnIO, so it is not repeated.</summary>
+    public bool PawnIoOfferDeclined { get; set; }
+
     // --- Window state ---
     public double? WindowLeft { get; set; }
     public double? WindowTop { get; set; }

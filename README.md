@@ -1,73 +1,85 @@
 # PC Stats
 
-Mały, zawsze-na-wierzchu widget dla Windows pokazujący obciążenie i temperaturę CPU/GPU, takty,
-zużycie RAM i VRAM oraz dowolne inne czujniki wykryte w komputerze. Pomyślany do trzymania na drugim
-monitorze podczas gier.
+A small always-on-top widget for Windows that shows CPU/GPU load and temperature, clocks,
+RAM and VRAM usage, and any other sensor found in the computer. Meant to sit on a second monitor
+while gaming.
 
-## Uruchomienie
+## Running
 
-Gotowy plik: `dist\PCStats.exe` (jeden plik, self-contained – nie wymaga zainstalowanego .NET).
+Ready-made file: `dist\PCStats.exe` (single self-contained file – no .NET install needed).
 
-Wymagania:
+Requirements:
 - Windows 10/11 x64
-- **PawnIO** (https://pawnio.eu) – podpisany sterownik, przez który czytane są czujniki CPU
-  (temperatura, takty, napięcia). Bez niego reszta działa, a kafelki CPU pokazują „—”.
-- Aplikacja uruchamia się z uprawnieniami administratora (wymaga tego dostęp do sterownika).
+- **PawnIO** (https://pawnio.eu) – a signed driver used to read CPU sensors (temperature, clocks,
+  voltages). Its official installer is built into PC Stats: on first start the app offers to install it,
+  and it can also be installed later under Settings → Behaviour. Without it everything else works and
+  the CPU tiles show "—".
+- The app runs with administrator rights (driver access requires it).
 
-## Obsługa
+## Usage
 
-| Akcja | Jak |
+| Action | How |
 |---|---|
-| Przesunięcie | przeciągnij lewym przyciskiem |
-| Ustawienia | ⚙ w nagłówku, prawy klik → Ustawienia, lub dwuklik ikony w zasobniku |
-| Ukrycie / pokazanie | przycisk ▁ w nagłówku, lewy klik ikony w zasobniku |
-| Zakończenie | ✕ w nagłówku, prawy klik → Zakończ |
-| Przełączenie kafelki ↔ lista | prawy klik → Przełącz układ |
+| Move | drag with the left mouse button |
+| Settings | ⚙ in the header, right-click → Settings, or double-click the tray icon |
+| Hide / show | ▁ button in the header, left-click the tray icon |
+| Exit | ✕ in the header, right-click → Exit |
+| Switch tiles ↔ list | right-click → Toggle layout |
 
-Ustawienia (metryki, wygląd, autostart, położenie okna) zapisują się w `%AppData%\PCStats\settings.json`,
-log diagnostyczny w `%AppData%\PCStats\log.txt`.
+Settings (metrics, appearance, autostart, window position) are saved to `%AppData%\PCStats\settings.json`,
+the diagnostic log to `%AppData%\PCStats\log.txt`.
 
-### Ustawienia
+### Settings
 
-- **Metryki** – lista wszystkich czujników pogrupowana po urządzeniach, z podglądem wartości na żywo.
-  Zaznaczone trafiają na widget; kolejność i własne etykiety ustawiasz po prawej.
-- **Wygląd** – układ (kafelki / lista), liczba kolumn, skala, przezroczystość tła, kolor akcentu,
-  wykresy historii, paski postępu.
-- **Zachowanie** – zawsze na wierzchu, przenikanie kliknięć, autostart z Windows (zadanie w Harmonogramie
-  z najwyższymi uprawnieniami – bez okna UAC przy logowaniu), częstotliwość odświeżania, progi temperatur.
+- **Metrics** – every sensor grouped by device, with a live value preview.
+  Ticked ones go on the widget; order and custom labels are set on the right.
+- **Appearance** – layout (tiles / list), number of columns, scale, background opacity, accent colour,
+  history graphs, progress bars.
+- **Behaviour** – always on top, click-through, start with Windows (a Task Scheduler task with
+  highest privileges – no UAC prompt at sign-in), refresh interval, temperature thresholds,
+  PawnIO driver status and installation.
 
-## Źródła danych
+## Data sources
 
-- **NVML** (`nvml.dll` ze sterownika NVIDIA) – obciążenie, temperatura, VRAM, pobór, takty, wentylator GPU.
-  Ten sam interfejs co `nvidia-smi`; koszt odczytu ~0,1 ms.
-- **LibreHardwareMonitorLib** – CPU (przez PawnIO), RAM, płyta główna (Super I/O), dyski (SMART), sieć,
-  a także rozszerzone czujniki GPU (hotspot, D3D). Odpytywane są tylko urządzenia, których czujniki
-  są aktualnie wybrane, więc nieużywane (np. SMART dysków) nie kosztują nic.
+- **NVML** (`nvml.dll` from the NVIDIA driver) – GPU load, temperature, VRAM, power, clocks, fan.
+  The same interface `nvidia-smi` uses; a read costs ~0.1 ms.
+- **LibreHardwareMonitorLib** – CPU (through PawnIO), RAM, motherboard (Super I/O), drives (SMART), network,
+  plus extended GPU sensors (hotspot, D3D). Only devices whose sensors are currently selected get polled,
+  so unused ones (e.g. drive SMART) cost nothing.
 
-Aplikacja nie hookuje, nie wstrzykuje niczego do innych procesów ani nie rysuje po ich oknach –
-z punktu widzenia anty-cheatów jest zwykłym monitorem sprzętu (jak HWiNFO), a PawnIO to sterownik
-podpisany i zaprojektowany jako bezpieczna alternatywa dla WinRing0.
+The app does not hook or inject anything into other processes and does not draw over their windows –
+to anti-cheat software it is an ordinary hardware monitor (like HWiNFO), and PawnIO is a signed driver
+designed as a safe replacement for WinRing0.
 
 ## Build
 
 ```
 dotnet build                       # debug
-dotnet publish -c Release -o dist  # jeden plik PCStats.exe
+dotnet publish -c Release -o dist  # single PCStats.exe
 ```
 
-Wymaga .NET 10 SDK. Flagi deweloperskie: `--settings` (otwiera ustawienia od razu),
-`--multi` (pomija blokadę pojedynczej instancji).
+Requires the .NET 10 SDK. Developer flags: `--settings` (opens settings right away),
+`--multi` (skips the single-instance lock).
 
-## Struktura
+## Structure
 
 ```
 src/PCStats/
-  Models/        typy danych: deskryptory metryk, snapshot, ustawienia
-  Services/      HardwareMonitorService (wątek odpytywania), MetricCatalog (etykiety, domyślne),
+  Models/        data types: metric descriptors, snapshot, settings
+  Services/      HardwareMonitorService (polling thread), MetricCatalog (labels, defaults),
                  SettingsStore (JSON + debounce), StartupService (schtasks), TrayIconService,
-                 Nvidia/ (P/Invoke NVML)
+                 PawnIoInstaller (embedded driver installer), Nvidia/ (NVML P/Invoke)
   ViewModels/    MVVM (CommunityToolkit.Mvvm): MainViewModel, MetricTileViewModel, SettingsViewModel
   Views/         MainWindow (widget), SettingsWindow
-  Controls/      Sparkline (własny FrameworkElement)
-  Themes/        Theme.xaml – tokeny kolorów i style kontrolek
+  Controls/      Sparkline (custom FrameworkElement)
+  Themes/        Theme.xaml – colour tokens and control styles
+  ThirdParty/    PawnIO installer (embedded) and its license
 ```
+
+## Third-party components
+
+- **PawnIO** by namazso – GPL-2.0-or-later. `PawnIO_setup.exe` 2.2.0 is shipped unmodified inside
+  PCStats.exe and only launched to install the driver; source code: https://github.com/namazso/PawnIO.
+  License text: `src/PCStats/ThirdParty/PawnIO/COPYING` (also copied next to the published exe).
+- **LibreHardwareMonitorLib** – MPL-2.0.
+- **CommunityToolkit.Mvvm** – MIT.

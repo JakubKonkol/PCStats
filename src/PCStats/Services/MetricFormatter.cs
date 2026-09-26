@@ -27,7 +27,7 @@ public static class MetricFormatter
         _ => (v.ToString("0.##"), string.Empty),
     };
 
-    /// <summary>Single string, e.g. "4,65 GHz".</summary>
+    /// <summary>Single string, e.g. "4.65 GHz".</summary>
     public static string FormatCompact(MetricKind kind, float v)
     {
         var (value, unit) = Format(kind, v);

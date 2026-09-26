@@ -7,7 +7,7 @@
         xmlns:models="clr-namespace:PCStats.Models"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:SettingsViewModel}"
-        Title="PC Stats – Ustawienia"
+        Title="PC Stats – Settings"
         Width="860" Height="640" MinWidth="720" MinHeight="520"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource SurfaceBrush}"
@@ -57,19 +57,19 @@
         <Grid Background="{StaticResource SurfaceBrush}">
             <StackPanel Orientation="Horizontal" Margin="16,0" VerticalAlignment="Center">
                 <Ellipse Width="8" Height="8" Fill="{DynamicResource AccentBrush}" Margin="0,1,10,0" />
-                <TextBlock Text="Ustawienia" FontSize="13" FontWeight="SemiBold" />
+                <TextBlock Text="Settings" FontSize="13" FontWeight="SemiBold" />
                 <TextBlock Text="{Binding HardwareSummary}" FontSize="11.5" Foreground="{StaticResource TextFaintBrush}" Margin="14,0,0,0" VerticalAlignment="Center" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,8,0" WindowChrome.IsHitTestVisibleInChrome="True">
-                <Button Style="{StaticResource IconButton}" Content="&#xE921;" ToolTip="Minimalizuj" Click="OnMinimize" Width="34" Height="30" />
-                <Button Style="{StaticResource DangerIconButton}" Content="&#xE8BB;" ToolTip="Zamknij" Click="OnClose" Width="34" Height="30" />
+                <Button Style="{StaticResource IconButton}" Content="&#xE921;" ToolTip="Minimize" Click="OnMinimize" Width="34" Height="30" />
+                <Button Style="{StaticResource DangerIconButton}" Content="&#xE8BB;" ToolTip="Close" Click="OnClose" Width="34" Height="30" />
             </StackPanel>
         </Grid>
 
         <TabControl Grid.Row="1" Margin="20,8,20,20">
 
             <!-- ======================= METRICS ======================= -->
-            <TabItem Header="Metryki">
+            <TabItem Header="Metrics">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1.15*" />
@@ -84,12 +84,12 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-                        <TextBlock Text="Dostępne czujniki" Style="{StaticResource SectionTitle}" Margin="0,0,0,8" />
+                        <TextBlock Text="Available sensors" Style="{StaticResource SectionTitle}" Margin="0,0,0,8" />
                         <Grid Grid.Row="1" Margin="0,0,0,10">
                             <TextBox x:Name="SearchBox" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Padding="32,6,10,6" />
                             <TextBlock Text="&#xE721;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="13" Foreground="{StaticResource TextMutedBrush}"
                                        VerticalAlignment="Center" Margin="11,0,0,0" IsHitTestVisible="False" />
-                            <TextBlock Text="Szukaj (np. temp, VRAM, wentylator)…" Foreground="{StaticResource TextFaintBrush}" FontSize="13"
+                            <TextBlock Text="Search (e.g. temp, VRAM, fan)…" Foreground="{StaticResource TextFaintBrush}" FontSize="13"
                                        VerticalAlignment="Center" Margin="33,0,0,0" IsHitTestVisible="False"
                                        Visibility="{Binding Text, ElementName=SearchBox, Converter={StaticResource StringToVis}, ConverterParameter=invert}" />
                         </Grid>
@@ -151,9 +151,9 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <DockPanel Margin="0,0,0,8">
-                            <Button DockPanel.Dock="Right" Content="Domyślne" Padding="10,4" FontSize="12" Command="{Binding RestoreDefaultMetricsCommand}" />
+                            <Button DockPanel.Dock="Right" Content="Defaults" Padding="10,4" FontSize="12" Command="{Binding RestoreDefaultMetricsCommand}" />
                             <TextBlock Style="{StaticResource SectionTitle}" Margin="0" VerticalAlignment="Center">
-                                <Run Text="Na widgecie" /><Run Text="{Binding Selected.Count, Mode=OneWay, StringFormat=' · {0}'}" />
+                                <Run Text="On the widget" /><Run Text="{Binding Selected.Count, Mode=OneWay, StringFormat=' · {0}'}" />
                             </TextBlock>
                         </DockPanel>
                         <Border Grid.Row="1" Style="{StaticResource Card}" Padding="6" Margin="0">
@@ -167,17 +167,17 @@
                                             </Grid.ColumnDefinitions>
                                             <Grid>
                                                 <TextBox x:Name="LabelBox" Text="{Binding CustomLabel, UpdateSourceTrigger=PropertyChanged}" Padding="8,4"
-                                                         FontSize="12.5" ToolTip="Własna etykieta (puste = domyślna)" />
+                                                         FontSize="12.5" ToolTip="Custom label (empty = default)" />
                                                 <TextBlock Text="{Binding DefaultLabel}" FontSize="12.5" Foreground="{StaticResource TextMutedBrush}"
                                                            VerticalAlignment="Center" Margin="9,0,0,0" IsHitTestVisible="False"
                                                            Visibility="{Binding Text, ElementName=LabelBox, Converter={StaticResource StringToVis}, ConverterParameter=invert}" />
                                             </Grid>
                                             <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="6,0,0,0">
-                                                <Button Style="{StaticResource SmallIconButton}" Content="&#xE70E;" ToolTip="W górę"
+                                                <Button Style="{StaticResource SmallIconButton}" Content="&#xE70E;" ToolTip="Move up"
                                                         Command="{Binding DataContext.MoveUpCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" />
-                                                <Button Style="{StaticResource SmallIconButton}" Content="&#xE70D;" ToolTip="W dół"
+                                                <Button Style="{StaticResource SmallIconButton}" Content="&#xE70D;" ToolTip="Move down"
                                                         Command="{Binding DataContext.MoveDownCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" />
-                                                <Button Style="{StaticResource DangerIconButton}" Width="24" Height="24" FontSize="11" Content="&#xE711;" ToolTip="Usuń"
+                                                <Button Style="{StaticResource DangerIconButton}" Width="24" Height="24" FontSize="11" Content="&#xE711;" ToolTip="Remove"
                                                         Command="{Binding DataContext.RemoveCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" />
                                             </StackPanel>
                                         </Grid>
@@ -186,13 +186,13 @@
                             </ListBox>
                         </Border>
                         <TextBlock Grid.Row="2" Style="{StaticResource RowHint}" Margin="2,10,0,0"
-                                   Text="Zaznacz czujniki po lewej. Kolejność tutaj = kolejność na widgecie. Wpisz własną nazwę, aby zmienić etykietę kafelka." />
+                                   Text="Tick sensors on the left. The order here is the order on the widget. Type a custom name to change a tile's label." />
                     </Grid>
                 </Grid>
             </TabItem>
 
             <!-- ======================= APPEARANCE ======================= -->
-            <TabItem Header="Wygląd">
+            <TabItem Header="Appearance">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel MaxWidth="640" HorizontalAlignment="Left">
 
@@ -203,11 +203,11 @@
                                         <ColumnDefinition Width="200" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Układ" Style="{StaticResource RowLabel}" />
+                                    <TextBlock Text="Layout" Style="{StaticResource RowLabel}" />
                                     <Border Grid.Column="1" CornerRadius="9" Background="{StaticResource TileBrush}" Padding="3" HorizontalAlignment="Left">
                                         <StackPanel Orientation="Horizontal">
-                                            <RadioButton Style="{StaticResource Segment}" Content="Kafelki" IsChecked="{Binding Layout, Converter={StaticResource EnumEquals}, ConverterParameter=Tiles}" />
-                                            <RadioButton Style="{StaticResource Segment}" Content="Lista" IsChecked="{Binding Layout, Converter={StaticResource EnumEquals}, ConverterParameter=Compact}" />
+                                            <RadioButton Style="{StaticResource Segment}" Content="Tiles" IsChecked="{Binding Layout, Converter={StaticResource EnumEquals}, ConverterParameter=Tiles}" />
+                                            <RadioButton Style="{StaticResource Segment}" Content="List" IsChecked="{Binding Layout, Converter={StaticResource EnumEquals}, ConverterParameter=Compact}" />
                                         </StackPanel>
                                     </Border>
                                 </Grid>
@@ -216,7 +216,7 @@
                                         <ColumnDefinition Width="200" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Kolumny" Style="{StaticResource RowLabel}" />
+                                    <TextBlock Text="Columns" Style="{StaticResource RowLabel}" />
                                     <Border Grid.Column="1" CornerRadius="9" Background="{StaticResource TileBrush}" Padding="3" HorizontalAlignment="Left">
                                         <StackPanel Orientation="Horizontal">
                                             <RadioButton Style="{StaticResource Segment}" Content="1" IsChecked="{Binding Columns, Converter={StaticResource EnumEquals}, ConverterParameter=1}" />
@@ -237,7 +237,7 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="56" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Skala" Style="{StaticResource RowLabel}" />
+                                    <TextBlock Text="Scale" Style="{StaticResource RowLabel}" />
                                     <Slider Grid.Column="1" Minimum="0.7" Maximum="1.8" TickFrequency="0.05" IsSnapToTickEnabled="True" Value="{Binding Scale}" />
                                     <TextBlock Grid.Column="2" Text="{Binding Scale, Converter={StaticResource Format}, ConverterParameter=0%}" Style="{StaticResource RowLabel}" TextAlignment="Right" />
                                 </Grid>
@@ -247,7 +247,7 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="56" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Przezroczystość tła" Style="{StaticResource RowLabel}" />
+                                    <TextBlock Text="Background opacity" Style="{StaticResource RowLabel}" />
                                     <Slider Grid.Column="1" Minimum="0.15" Maximum="1" TickFrequency="0.05" IsSnapToTickEnabled="True" Value="{Binding BackgroundOpacity}" />
                                     <TextBlock Grid.Column="2" Text="{Binding BackgroundOpacity, Converter={StaticResource Format}, ConverterParameter=0%}" Style="{StaticResource RowLabel}" TextAlignment="Right" />
                                 </Grid>
@@ -256,7 +256,7 @@
                                         <ColumnDefinition Width="200" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Kolor akcentu" Style="{StaticResource RowLabel}" VerticalAlignment="Top" Margin="0,4,0,0" />
+                                    <TextBlock Text="Accent colour" Style="{StaticResource RowLabel}" VerticalAlignment="Top" Margin="0,4,0,0" />
                                     <ItemsControl Grid.Column="1" ItemsSource="{x:Static vm:SettingsViewModel.AccentPresets}">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
@@ -298,34 +298,34 @@
 
                         <Border Style="{StaticResource Card}">
                             <StackPanel>
-                                <CheckBox IsChecked="{Binding ShowHeader}" Content="Pasek nagłówka z przyciskami" />
-                                <CheckBox IsChecked="{Binding ShowSparklines}" Content="Wykresy historii (ostatnie 90 odczytów)" />
-                                <CheckBox IsChecked="{Binding ShowBars}" Content="Paski postępu pod wartościami" />
+                                <CheckBox IsChecked="{Binding ShowHeader}" Content="Header bar with buttons" />
+                                <CheckBox IsChecked="{Binding ShowSparklines}" Content="History graphs (last 90 readings)" />
+                                <CheckBox IsChecked="{Binding ShowBars}" Content="Progress bars under values" />
                             </StackPanel>
                         </Border>
 
-                        <Button Content="Przywróć domyślny wygląd" HorizontalAlignment="Left" Command="{Binding RestoreDefaultAppearanceCommand}" />
+                        <Button Content="Restore default appearance" HorizontalAlignment="Left" Command="{Binding RestoreDefaultAppearanceCommand}" />
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
 
             <!-- ======================= BEHAVIOUR ======================= -->
-            <TabItem Header="Zachowanie">
+            <TabItem Header="Behaviour">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel MaxWidth="640" HorizontalAlignment="Left">
 
                         <Border Style="{StaticResource Card}">
                             <StackPanel>
-                                <CheckBox IsChecked="{Binding AlwaysOnTop}" Content="Zawsze na wierzchu" />
+                                <CheckBox IsChecked="{Binding AlwaysOnTop}" Content="Always on top" />
                                 <StackPanel>
-                                    <CheckBox IsChecked="{Binding ClickThrough}" Content="Przenikanie kliknięć (klikasz „przez” widget)" />
+                                    <CheckBox IsChecked="{Binding ClickThrough}" Content="Click-through (clicks pass through the widget)" />
                                     <TextBlock Style="{StaticResource RowHint}" Margin="0,-2,0,6"
-                                               Text="Po włączeniu widgetu nie da się przeciągnąć ani kliknąć – wyłączysz to z menu ikony w zasobniku." />
+                                               Text="While on, the widget cannot be dragged or clicked – turn it off from the tray icon menu." />
                                 </StackPanel>
                                 <StackPanel>
-                                    <CheckBox IsChecked="{Binding StartWithWindows}" Content="Uruchamiaj razem z Windows" />
+                                    <CheckBox IsChecked="{Binding StartWithWindows}" Content="Start with Windows" />
                                     <TextBlock Style="{StaticResource RowHint}" Margin="0,-2,0,0"
-                                               Text="Tworzy zadanie w Harmonogramie zadań z najwyższymi uprawnieniami, dzięki czemu nie ma okna UAC przy każdym logowaniu." />
+                                               Text="Creates a Task Scheduler task with highest privileges, so there is no UAC prompt at every sign-in." />
                                     <TextBlock Style="{StaticResource RowHint}" Foreground="{StaticResource CriticalBrush}" Text="{Binding StartupError}"
                                                Visibility="{Binding StartupError, Converter={StaticResource StringToVis}}" />
                                 </StackPanel>
@@ -340,17 +340,17 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="64" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Częstotliwość odświeżania" Style="{StaticResource RowLabel}" />
+                                    <TextBlock Text="Refresh interval" Style="{StaticResource RowLabel}" />
                                     <Slider Grid.Column="1" Minimum="250" Maximum="5000" TickFrequency="250" IsSnapToTickEnabled="True" Value="{Binding UpdateIntervalMs}" />
                                     <TextBlock Grid.Column="2" Text="{Binding UpdateIntervalMs, Converter={StaticResource Format}, ConverterParameter='0 ms'}" Style="{StaticResource RowLabel}" TextAlignment="Right" />
                                 </Grid>
-                                <TextBlock Style="{StaticResource RowHint}" Text="1000 ms to dobry kompromis. Poniżej 500 ms odczyt czujników sam zaczyna zauważalnie obciążać CPU." />
+                                <TextBlock Style="{StaticResource RowHint}" Text="1000 ms is a good balance. Below 500 ms reading the sensors starts to load the CPU noticeably." />
                             </StackPanel>
                         </Border>
 
                         <Border Style="{StaticResource Card}">
                             <StackPanel>
-                                <TextBlock Text="Progi temperatur" Style="{StaticResource RowLabel}" FontWeight="SemiBold" Margin="0,0,0,6" />
+                                <TextBlock Text="Temperature thresholds" Style="{StaticResource RowLabel}" FontWeight="SemiBold" Margin="0,0,0,6" />
                                 <Grid Margin="0,4">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="200" />
@@ -359,7 +359,7 @@
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Orientation="Horizontal">
                                         <Ellipse Width="9" Height="9" Fill="{StaticResource WarningBrush}" Margin="0,0,8,0" VerticalAlignment="Center" />
-                                        <TextBlock Text="Ostrzeżenie" Style="{StaticResource RowLabel}" />
+                                        <TextBlock Text="Warning" Style="{StaticResource RowLabel}" />
                                     </StackPanel>
                                     <Slider Grid.Column="1" Minimum="50" Maximum="110" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding TemperatureWarning}" />
                                     <TextBlock Grid.Column="2" Text="{Binding TemperatureWarning, Converter={StaticResource Format}, ConverterParameter='0 °C'}" Style="{StaticResource RowLabel}" TextAlignment="Right" />
@@ -372,12 +372,12 @@
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Orientation="Horizontal">
                                         <Ellipse Width="9" Height="9" Fill="{StaticResource CriticalBrush}" Margin="0,0,8,0" VerticalAlignment="Center" />
-                                        <TextBlock Text="Krytyczna" Style="{StaticResource RowLabel}" />
+                                        <TextBlock Text="Critical" Style="{StaticResource RowLabel}" />
                                     </StackPanel>
                                     <Slider Grid.Column="1" Minimum="50" Maximum="120" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding TemperatureCritical}" />
                                     <TextBlock Grid.Column="2" Text="{Binding TemperatureCritical, Converter={StaticResource Format}, ConverterParameter='0 °C'}" Style="{StaticResource RowLabel}" TextAlignment="Right" />
                                 </Grid>
-                                <TextBlock Style="{StaticResource RowHint}" Text="Pamięć (RAM / VRAM) podświetla się automatycznie przy 90% i 97% zajętości." />
+                                <TextBlock Style="{StaticResource RowHint}" Text="Memory (RAM / VRAM) is highlighted automatically at 90% and 97% usage." />
                             </StackPanel>
                         </Border>
 
@@ -385,9 +385,13 @@
                             <StackPanel>
                                 <TextBlock Text="{Binding DriverStatus}" FontSize="12.5" />
                                 <TextBlock Style="{StaticResource RowHint}"
-                                           Text="Czujniki CPU (temperatura, takty, napięcia) wymagają podpisanego sterownika PawnIO. Jeśli go brakuje, pobierz instalator ze strony pawnio.eu i uruchom PC Stats ponownie." />
+                                           Text="CPU sensors (temperature, clocks, voltages) need the signed PawnIO driver (pawnio.eu). Its installer is built into PC Stats – the app restarts after installing it." />
+                                <TextBlock Style="{StaticResource RowHint}" Foreground="{StaticResource CriticalBrush}" Text="{Binding DriverInstallError}"
+                                           Visibility="{Binding DriverInstallError, Converter={StaticResource StringToVis}}" />
                                 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                    <Button Content="Otwórz folder logów" Padding="10,5" FontSize="12" Command="{Binding OpenLogFolderCommand}" />
+                                    <Button Content="Install PawnIO" Padding="10,5" FontSize="12" Margin="0,0,8,0" Command="{Binding InstallDriverCommand}"
+                                            Visibility="{Binding IsDriverMissing, Converter={StaticResource BoolToVis}}" />
+                                    <Button Content="Open log folder" Padding="10,5" FontSize="12" Command="{Binding OpenLogFolderCommand}" />
                                 </StackPanel>
                             </StackPanel>
                         </Border>

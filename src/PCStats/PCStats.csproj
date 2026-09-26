@@ -34,6 +34,12 @@
     <Using Remove="System.Windows.Forms" />
   </ItemGroup>
 
+  <!-- Official signed PawnIO installer (GPL-2.0, see ThirdParty/PawnIO), offered when the driver is missing -->
+  <ItemGroup>
+    <EmbeddedResource Include="ThirdParty\PawnIO\PawnIO_setup.exe" LogicalName="PCStats.PawnIO_setup.exe" />
+    <None Include="ThirdParty\PawnIO\COPYING" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="LibreHardwareMonitorLib" Version="0.9.6" />

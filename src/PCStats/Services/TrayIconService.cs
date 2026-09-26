@@ -22,17 +22,17 @@ public sealed class TrayIconService : IDisposable
         menu.BackColor = Color.FromArgb(22, 26, 33);
         menu.ForeColor = Color.FromArgb(243, 244, 246);
 
-        _toggleVisible = new ToolStripMenuItem("Ukryj widget", null, (_, _) => ToggleVisible());
-        _alwaysOnTop = new ToolStripMenuItem("Zawsze na wierzchu", null, (_, _) => _store.Update(s => s.AlwaysOnTop = !s.AlwaysOnTop)) { CheckOnClick = false };
-        _clickThrough = new ToolStripMenuItem("Przenikanie kliknięć", null, (_, _) => _store.Update(s => s.ClickThrough = !s.ClickThrough)) { CheckOnClick = false };
+        _toggleVisible = new ToolStripMenuItem("Hide widget", null, (_, _) => ToggleVisible());
+        _alwaysOnTop = new ToolStripMenuItem("Always on top", null, (_, _) => _store.Update(s => s.AlwaysOnTop = !s.AlwaysOnTop)) { CheckOnClick = false };
+        _clickThrough = new ToolStripMenuItem("Click-through", null, (_, _) => _store.Update(s => s.ClickThrough = !s.ClickThrough)) { CheckOnClick = false };
 
         menu.Items.Add(_toggleVisible);
-        menu.Items.Add(new ToolStripMenuItem("Ustawienia…", null, (_, _) => _app.ShowSettings()));
+        menu.Items.Add(new ToolStripMenuItem("Settings…", null, (_, _) => _app.ShowSettings()));
         menu.Items.Add(new ToolStripSeparator());
         menu.Items.Add(_alwaysOnTop);
         menu.Items.Add(_clickThrough);
         menu.Items.Add(new ToolStripSeparator());
-        menu.Items.Add(new ToolStripMenuItem("Zakończ", null, (_, _) => _app.Quit()));
+        menu.Items.Add(new ToolStripMenuItem("Exit", null, (_, _) => _app.Quit()));
         menu.Opening += (_, _) => RefreshMenuState();
 
         _icon = new NotifyIcon
@@ -60,7 +60,7 @@ public sealed class TrayIconService : IDisposable
 
     private void RefreshMenuState()
     {
-        _toggleVisible.Text = _app.IsWidgetVisible ? "Ukryj widget" : "Pokaż widget";
+        _toggleVisible.Text = _app.IsWidgetVisible ? "Hide widget" : "Show widget";
         _alwaysOnTop.Checked = _store.Current.AlwaysOnTop;
         _clickThrough.Checked = _store.Current.ClickThrough;
     }

@@ -15,6 +15,9 @@ public interface IShell
     void ShowSettings();
     void HideToTray();
     void Quit();
+
+    /// <summary>Starts a fresh copy of the app and exits this one, e.g. after installing the sensor driver.</summary>
+    void Restart();
 }
 
 public sealed partial class MainViewModel : ObservableObject
@@ -42,7 +45,7 @@ public sealed partial class MainViewModel : ObservableObject
     public partial bool IsLoading { get; private set; } = true;
 
     [ObservableProperty]
-    public partial string StatusText { get; private set; } = "Wykrywanie sprzętu…";
+    public partial string StatusText { get; private set; } = "Detecting hardware…";
 
     [ObservableProperty]
     public partial string? HintText { get; private set; }
@@ -71,6 +74,9 @@ public sealed partial class MainViewModel : ObservableObject
     [ObservableProperty]
     public partial bool ShowSparklines { get; private set; } = true;
 
+    /// <summary>Replaces the loading text, for work the shell does before hardware detection starts.</summary>
+    public void SetStatus(string text) => StatusText = text;
+
     public async Task InitializeAsync()
     {
         try
@@ -80,7 +86,7 @@ public sealed partial class MainViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            StatusText = "Nie udało się uruchomić monitora sprzętu.";
+            StatusText = "Could not start the hardware monitor.";
             HintText = ex.Message;
             return;
         }
@@ -96,7 +102,7 @@ public sealed partial class MainViewModel : ObservableObject
         IsLoading = false;
         HintText = _monitor.IsCpuDriverAvailable
             ? null
-            : "Brak sterownika PawnIO – temperatura i takt CPU będą niedostępne. Pobierz z pawnio.eu";
+            : "PawnIO driver missing – CPU temperature and clocks are unavailable. Install it under Settings → Behaviour.";
     }
 
     [RelayCommand]
@@ -220,7 +226,7 @@ public sealed partial class MainViewModel : ObservableObject
                 Tiles.Add(new MetricTileViewModel(descriptor, selection.CustomLabel));
         }
 
-        StatusText = Tiles.Count == 0 ? "Brak wybranych metryk – kliknij ⚙ aby wybrać." : string.Empty;
+        StatusText = Tiles.Count == 0 ? "No metrics selected – click ⚙ to pick some." : string.Empty;
         if (!_settingsOpen)
             _monitor.SetActiveMetrics(Tiles.Select(t => t.Id).ToList());
     }

@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Globalization;
 using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
@@ -20,6 +22,13 @@ public partial class App : Application, IShell
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+
+        // The UI is English, so format numbers the English way (4.65 GHz) whatever the Windows region is.
+        var culture = CultureInfo.GetCultureInfo("en-US");
+        CultureInfo.DefaultThreadCurrentCulture = culture;
+        CultureInfo.DefaultThreadCurrentUICulture = culture;
+        CultureInfo.CurrentCulture = culture;
+        CultureInfo.CurrentUICulture = culture;
 
         // --multi is a development escape hatch for running a test build next to the installed one.
         _singleInstance = new Mutex(initiallyOwned: true, @"Local\PCStats.SingleInstance", out var createdNew);
@@ -55,6 +64,7 @@ public partial class App : Application, IShell
     {
         try
         {
+            await OfferPawnIoInstallAsync(viewModel);
             await viewModel.InitializeAsync();
             if (openSettings)
                 ShowSettings();
@@ -63,6 +73,38 @@ public partial class App : Application, IShell
         {
             Logger.Error("View model initialisation failed", ex);
         }
+    }
+
+    /// <summary>
+    /// First-run offer to install the bundled sensor driver. Runs before the hardware monitor opens,
+    /// so a fresh install is picked up without a restart.
+    /// </summary>
+    private async Task OfferPawnIoInstallAsync(MainViewModel viewModel)
+    {
+        if (PawnIoInstaller.IsInstalled || _store!.Current.PawnIoOfferDeclined)
+            return;
+
+        // Owned by the topmost widget so the question cannot end up hidden behind other windows.
+        var answer = MessageBox.Show(_mainWindow!,
+            "CPU temperature, clock and voltage readings need the PawnIO driver (signed, open source – pawnio.eu).\n\n" +
+            "Its installer is built into PC Stats. Install it now?\n\n" +
+            "Everything else works without it, and you can install it later under Settings → Behaviour.",
+            "PC Stats", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+        if (answer != MessageBoxResult.Yes)
+        {
+            _store.UpdateSilently(s => s.PawnIoOfferDeclined = true);
+            return;
+        }
+
+        viewModel.SetStatus("Installing the PawnIO driver…");
+        if (!await PawnIoInstaller.InstallAsync())
+        {
+            MessageBox.Show(_mainWindow!,
+                $"PawnIO could not be installed. Details were written to {Logger.Directory}\\log.txt",
+                "PC Stats", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+        viewModel.SetStatus("Detecting hardware…");
     }
 
     protected override void OnExit(ExitEventArgs e)
@@ -87,7 +129,7 @@ public partial class App : Application, IShell
         }
 
         _mainViewModel!.SetSettingsOpen(true);
-        var vm = new SettingsViewModel(_store!, _monitor!, Dispatcher);
+        var vm = new SettingsViewModel(_store!, _monitor!, Dispatcher, this);
         _settingsWindow = new SettingsWindow(vm);
         _settingsWindow.Closed += (_, _) =>
         {
@@ -112,11 +154,47 @@ public partial class App : Application, IShell
 
     public void Quit() => Shutdown();
 
+    public void Restart()
+    {
+        var path = Environment.ProcessPath;
+        if (string.IsNullOrEmpty(path))
+        {
+            Logger.Warn("Cannot restart: process path unknown");
+            return;
+        }
+
+        _store?.SaveNow();
+
+        // Free the single-instance lock first, otherwise the new copy finds this one and exits.
+        try
+        {
+            _singleInstance?.ReleaseMutex();
+        }
+        catch (ApplicationException)
+        {
+            // Not owned: this copy was started with --multi next to another one.
+        }
+        _singleInstance?.Dispose();
+        _singleInstance = null;
+
+        try
+        {
+            Process.Start(new ProcessStartInfo(path) { UseShellExecute = false });
+        }
+        catch (Exception ex)
+        {
+            Logger.Error("Restart failed", ex);
+            return;
+        }
+
+        Shutdown();
+    }
+
     private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
         Logger.Error("Unhandled UI exception", e.Exception);
         MessageBox.Show(
-            $"Wystąpił nieoczekiwany błąd:\n\n{e.Exception.Message}\n\nSzczegóły zapisano w {Logger.Directory}\\log.txt",
+            $"An unexpected error occurred:\n\n{e.Exception.Message}\n\nDetails were written to {Logger.Directory}\\log.txt",
             "PC Stats", MessageBoxButton.OK, MessageBoxImage.Error);
         e.Handled = true;
     }
